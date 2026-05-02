@@ -55,6 +55,7 @@ const navItems = [
   { to: '/transactions', icon: '⇄', label: 'Transactions' },
   { to: '/categories',   icon: '⊞', label: 'Categories' },
   { to: '/locations',    icon: '◎', label: 'Locations' },
+  { to: '/users',        icon: '◉', label: 'Users' },
 ]
 
 function handleLogout() {

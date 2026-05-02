@@ -75,3 +75,18 @@ export const returnSchema = Joi.object({
   quantity: Joi.number().integer().min(1).default(1),
   note: Joi.string().max(500).optional().allow(''),
 });
+
+// ─────────────────────────────────────────
+// UPDATE USER (admin)
+// ─────────────────────────────────────────
+export const updateUserSchema = Joi.object({
+  name: Joi.string().min(2).max(100),
+  role: Joi.string().valid('ADMIN', 'STAFF'),
+  password: Joi.string()
+    .min(8)
+    .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/)
+    .optional()
+    .messages({
+      'string.pattern.base': 'Password must contain uppercase, lowercase, number, and special character',
+    }),
+}).min(1);

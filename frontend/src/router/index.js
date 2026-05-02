@@ -8,6 +8,7 @@ import ItemsPage       from '@/pages/ItemsPage.vue'
 import TransactionsPage from '@/pages/TransactionsPage.vue'
 import CategoriesPage  from '@/pages/CategoriesPage.vue'
 import LocationsPage   from '@/pages/LocationsPage.vue'
+import UsersPage       from '@/pages/UsersPage.vue'
 
 const routes = [
   { path: '/login', name: 'Login', component: LoginPage, meta: { guest: true } },
@@ -21,6 +22,7 @@ const routes = [
   { path: '/transactions', name: 'Transactions', component: TransactionsPage, meta: { requiresAuth: true } },
   { path: '/categories',   name: 'Categories',   component: CategoriesPage,   meta: { requiresAuth: true } },
   { path: '/locations',    name: 'Locations',    component: LocationsPage,    meta: { requiresAuth: true } },
+  { path: '/users',        name: 'Users',        component: UsersPage,        meta: { requiresAuth: true } },
   { path: '/:pathMatch(.*)*', redirect: '/dashboard' },
 ]
 

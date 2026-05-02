@@ -11,6 +11,7 @@ import itemRoutes        from './routes/item.routes.js';
 import transactionRoutes from './routes/transaction.routes.js';
 import categoryRoutes    from './routes/category.routes.js';
 import locationRoutes    from './routes/location.routes.js';
+import userRoutes        from './routes/user.routes.js';
 
 import { notFound, errorHandler } from './middlewares/errorHandler.js';
 import { prisma } from './prisma/client.js';
@@ -108,6 +109,7 @@ app.use('/api/items',        itemRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/categories',   categoryRoutes);
 app.use('/api/locations',    locationRoutes);
+app.use('/api/users',        userRoutes);
 
 // ─────────────────────────────────────────
 // ERROR HANDLING
