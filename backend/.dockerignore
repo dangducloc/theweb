@@ -1,0 +1,40 @@
+# Node
+node_modules
+npm-debug.log
+yarn.lock
+pnpm-lock.yaml
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Git
+.git
+.gitignore
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode
+.idea
+
+# Logs
+logs
+*.log
+
+# Build output (nếu dùng TS)
+dist
+build
+
+# Docker
+Dockerfile
+docker-compose.yml
+
+# Tests
+coverage
+__tests__
+
+# Misc
+*.md
+*.tgz

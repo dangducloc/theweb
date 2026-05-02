@@ -1,0 +1,117 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────
+// USER
+// ─────────────────────────────────────────
+model User {
+  id           Int           @id @default(autoincrement())
+  name         String
+  email        String        @unique
+  password     String
+  role         Role          @default(STAFF)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  transactions Transaction[]
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  STAFF
+}
+
+// ─────────────────────────────────────────
+// CATEGORY
+// ─────────────────────────────────────────
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  items     Item[]
+
+  @@map("categories")
+}
+
+// ─────────────────────────────────────────
+// LOCATION
+// ─────────────────────────────────────────
+model Location {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  address   String?
+  createdAt DateTime @default(now())
+
+  items     Item[]
+
+  @@map("locations")
+}
+
+// ─────────────────────────────────────────
+// ITEM
+// ─────────────────────────────────────────
+model Item {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  quantity    Int      @default(0)
+  minQuantity Int      @default(0)
+  imageUrl    String?
+
+  categoryId  Int
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  locationId  Int
+  location    Location @relation(fields: [locationId], references: [id], onDelete: Restrict)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  transactions Transaction[]
+
+  @@index([categoryId])
+  @@index([locationId])
+  @@index([quantity])
+  @@map("items")
+}
+
+// ─────────────────────────────────────────
+// TRANSACTION
+// ─────────────────────────────────────────
+model Transaction {
+  id        Int             @id @default(autoincrement())
+  type      TransactionType
+  quantity  Int             @default(1)
+  note      String?
+  dueDate   DateTime?
+
+  itemId    Int
+  item      Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  userId    Int
+  user      User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+
+  @@index([itemId])
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
+  @@map("transactions")
+}
+
+enum TransactionType {
+  BORROW
+  RETURN
+}
