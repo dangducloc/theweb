@@ -12,18 +12,24 @@ if [ -z "$DATABASE_URL" ]; then
 fi
 
 # ── 2. Parse DATABASE_URL ─────────────────────────────────
-# Format: postgresql://user:password@host:port/dbname
-# hoặc:   postgres://user:password@host:port/dbname
+# Support cả 2 format:
+#   postgresql://user:pass@host:port/dbname  (có port)
+#   postgresql://user:pass@host/dbname       (không có port → default 5432)
 
-# Bỏ prefix postgresql:// hoặc postgres://
 _url=$(echo "$DATABASE_URL" | sed 's|^postgresql://||;s|^postgres://||')
 
-# user:password@host:port/dbname
 DB_USER=$(echo "$_url" | cut -d':' -f1)
 DB_PASS=$(echo "$_url" | cut -d':' -f2 | cut -d'@' -f1)
-DB_HOST=$(echo "$_url" | cut -d'@' -f2 | cut -d':' -f1)
-DB_PORT=$(echo "$_url" | cut -d'@' -f2 | cut -d':' -f2 | cut -d'/' -f1)
-DB_NAME=$(echo "$_url" | cut -d'/' -f2)
+DB_HOST=$(echo "$_url" | cut -d'@' -f2 | cut -d':' -f1 | cut -d'/' -f1)
+DB_NAME=$(echo "$_url" | rev | cut -d'/' -f1 | rev)
+
+# Port: nếu URL không có :port thì default 5432
+_hostpart=$(echo "$_url" | cut -d'@' -f2)
+if echo "$_hostpart" | grep -q ':'; then
+  DB_PORT=$(echo "$_hostpart" | cut -d':' -f2 | cut -d'/' -f1)
+else
+  DB_PORT=5432
+fi
 
 echo "  Host : $DB_HOST"
 echo "  Port : $DB_PORT"
