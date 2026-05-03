@@ -20,19 +20,29 @@ const app  = express();
 const PORT = process.env.PORT || 3000;
 
 // ─────────────────────────────────────────
+// NORMALIZE ENV VARS
+// ─────────────────────────────────────────
+if (process.env.FRONTEND_URL) {
+  process.env.FRONTEND_URL = process.env.FRONTEND_URL.replace(/\/+$/, '').trim();
+}
+
+// ─────────────────────────────────────────
 // SECURITY MIDDLEWARES
 // ─────────────────────────────────────────
-app.use(helmet());  // sets secure HTTP headers
+app.use(helmet());
 
 // CORS
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:5173',
+  'http://localhost:5173',
   'http://localhost:3000',
 ];
 
+console.log('✅ Allowed origins:', allowedOrigins);
+
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow Postman / server-to-server (no origin)
+    console.log('🔍 Request origin:', origin);
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -46,8 +56,8 @@ app.use(cors({
 
 // Rate limiting – global
 app.use(rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200,                  // max 200 requests per window
+  windowMs: 15 * 60 * 1000,
+  max: 200,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -59,7 +69,7 @@ app.use(rateLimit({
 // Stricter rate limit for auth routes
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20, // only 20 login attempts per 15 min
+  max: 20,
   message: {
     success: false,
     message: 'Too many auth attempts, please try again later.',
