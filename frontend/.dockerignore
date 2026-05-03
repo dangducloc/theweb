@@ -23,7 +23,7 @@ Thumbs.db
 logs
 *.log
 
-# Build output (nếu dùng TS)
+# Build output (if using TS)
 dist
 build
 

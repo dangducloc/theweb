@@ -1,27 +1,45 @@
-# -------- Base --------
-FROM node:20-alpine
+# ── Stage 1: Builder ──────────────────────────────────────
+FROM node:20-alpine3.19 AS builder
 
-# Tạo working dir
 WORKDIR /app
 
-# Cài thêm openssl (Prisma cần)
 RUN apk add --no-cache openssl
 
-# Copy package trước để tận dụng cache
 COPY package*.json ./
+COPY prisma ./prisma/
 
-# Install deps (prod)
-RUN npm install --omit=dev
+RUN npm ci
 
-# Copy source code
-COPY . .
-
-# Generate Prisma Client
 RUN npx prisma generate
 
+COPY . .
 
-# Expose port
+# ── Stage 2: Production ───────────────────────────────────
+FROM node:20-alpine3.19 AS production
+
+WORKDIR /app
+
+# openssl: required by Prisma
+# wget: healthcheck
+# postgresql-client: provides pg_isready used in the entrypoint
+RUN apk add --no-cache openssl wget postgresql-client
+
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+COPY --from=builder /app/node_modules        ./node_modules
+COPY --from=builder /app/prisma              ./prisma
+COPY --from=builder /app/src                 ./src
+COPY --from=builder /app/package.json        ./
+COPY --from=builder /app/docker-entrypoint.sh ./docker-entrypoint.sh
+
+RUN chmod +x ./docker-entrypoint.sh && \
+    chown -R appuser:appgroup /app
+
+USER appuser
+
 EXPOSE 3000
 
-# Start app + migrate
-CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
+HEALTHCHECK --interval=10s --timeout=5s --retries=5 \
+  CMD wget -qO- http://localhost:3000/health || exit 1
+
+ENTRYPOINT ["./docker-entrypoint.sh"]
