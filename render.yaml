@@ -15,7 +15,6 @@ services:
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
 
-
     healthCheckPath: /health
 
     envVars:
@@ -41,12 +40,14 @@ services:
 
 
   # ================= FRONTEND =================
-  - type: static
+  - type: web
     name: inventory-frontend
+    runtime: docker
     region: singapore
+    plan: free
 
-    buildCommand: cd frontend && npm install && npm run build
-    staticPublishPath: ./frontend/dist
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
 
     envVars:
       - key: VITE_API_URL
@@ -54,8 +55,3 @@ services:
           name: inventory-backend
           type: web
           property: hostport
-
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
