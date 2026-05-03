@@ -18,23 +18,27 @@ services:
     healthCheckPath: /health
 
     envVars:
+      # 🔹 Database
       - key: DATABASE_URL
         fromDatabase:
           name: inventory-db
           property: connectionString
 
+      # 🔹 JWT 
       - key: JWT_SECRET
-        sync: false
+        - value: change_this_to_a_strong_secret
 
       - key: JWT_EXPIRES_IN
         value: 7d
 
+      # 🔹 CORS 
       - key: FRONTEND_URL
         fromService:
           name: inventory-frontend
           type: web
-          property: host
+          property: hostport
 
+      # 🔹 Runtime
       - key: NODE_ENV
         value: production
 
@@ -50,5 +54,9 @@ services:
     dockerContext: ./frontend
 
     envVars:
+      # 🔹 API URL 
       - key: VITE_API_URL
-        sync: false
+        fromService:
+          name: inventory-backend
+          type: web
+          property: hostport
