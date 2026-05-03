@@ -33,7 +33,7 @@ services:
         fromService:
           name: inventory-frontend
           type: web
-          property: hostport
+          property: host
 
       - key: NODE_ENV
         value: production
@@ -51,7 +51,4 @@ services:
 
     envVars:
       - key: VITE_API_URL
-        fromService:
-          name: inventory-backend
-          type: web
-          property: hostport
+        sync: false
