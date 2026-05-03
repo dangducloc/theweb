@@ -10,7 +10,7 @@ services:
     name: inventory-backend
     runtime: docker
     region: singapore
-    plan: starter
+    plan: free
 
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
